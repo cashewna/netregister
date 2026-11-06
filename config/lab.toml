@@ -1,0 +1,37 @@
+# Lab configuration used by the isolated docker compose proof.
+# The only network this file authorises is the compose bridge below.
+
+[database]
+path = "/data/netregister.db"
+
+[scanner]
+interface = "eth0"
+allowed_networks = ["172.28.77.0/28"]
+ports = [22, 80, 443, 8080, 9100]
+timeout_ms = 1500
+
+# The bridge gateway is the router host for this segment. Its MAC is assigned
+# by the host, so it is matched by IP.
+[[assets]]
+ip = "172.28.77.1"
+hostname = "edge-router"
+owner = "Network Operations"
+location = "Lab gateway (docker bridge)"
+
+[[assets]]
+mac = "02:42:ac:1c:4d:02"
+hostname = "lab-nas"
+owner = "IT Lab"
+location = "Rack A, shelf 2"
+
+[[assets]]
+mac = "02:42:ac:1c:4d:03"
+hostname = "lab-printer"
+owner = "Facilities"
+location = "Print room"
+
+[[assets]]
+mac = "02:42:ac:1c:4d:04"
+hostname = "lab-camera"
+owner = "Security"
+location = "Front entrance"

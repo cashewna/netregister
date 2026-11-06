@@ -1,0 +1,96 @@
+services:
+  scanner:
+    build: .
+    cap_add:
+      - NET_RAW
+    entrypoint: ["/bin/sh", "/proof.sh"]
+    volumes:
+      - netregister-data:/data
+      - ./config/lab.toml:/etc/netregister.toml:ro
+      - ./scripts/lab-proof.sh:/proof.sh:ro
+    networks:
+      lab:
+        ipv4_address: 172.28.77.10
+    depends_on:
+      nas:
+        condition: service_healthy
+      printer:
+        condition: service_healthy
+      camera:
+        condition: service_healthy
+    restart: "no"
+    labels:
+      com.netregister.role: scanner
+
+  nas:
+    image: alpine:3.20
+    command:
+      - sh
+      - -c
+      - exec nc -lk -p 8080 -e /bin/true
+    networks:
+      lab:
+        ipv4_address: 172.28.77.2
+    mac_address: "02:42:ac:1c:4d:02"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8080"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+    restart: "no"
+    labels:
+      com.netregister.asset: nas
+      com.netregister.owner: it-lab
+
+  printer:
+    image: alpine:3.20
+    command:
+      - sh
+      - -c
+      - exec nc -lk -p 9100 -e /bin/true
+    networks:
+      lab:
+        ipv4_address: 172.28.77.3
+    mac_address: "02:42:ac:1c:4d:03"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 9100"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+    restart: "no"
+    labels:
+      com.netregister.asset: printer
+      com.netregister.owner: facilities
+
+  camera:
+    image: alpine:3.20
+    command:
+      - sh
+      - -c
+      - exec nc -lk -p 80 -e /bin/true
+    networks:
+      lab:
+        ipv4_address: 172.28.77.4
+    mac_address: "02:42:ac:1c:4d:04"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 80"]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+    restart: "no"
+    labels:
+      com.netregister.asset: camera
+      com.netregister.owner: security
+
+networks:
+  lab:
+    driver: bridge
+    labels:
+      com.netregister.role: isolated-lab
+    ipam:
+      config:
+        - subnet: 172.28.77.0/28
+          gateway: 172.28.77.1
+
+volumes:
+  netregister-data:

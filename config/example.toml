@@ -1,0 +1,18 @@
+# Example configuration. Copy to netregister.toml and edit for your network.
+# Only list networks you own or administer.
+
+[database]
+path = "./netregister.db"
+
+[scanner]
+interface = "eth0"
+allowed_networks = ["192.168.1.0/24"]
+ports = [22, 80, 443, 8080, 9100]
+timeout_ms = 1000
+
+# Example asset. Replace the MAC and metadata with a real device.
+[[assets]]
+mac = "02:42:ac:1c:4d:02"
+hostname = "example-nas"
+owner = "IT Lab"
+location = "Rack A, shelf 2"

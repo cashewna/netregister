@@ -1,0 +1,7 @@
+/target
+*.db
+*.db-journal
+*.sqlite
+.scratch/
+proof-output/
+.env
